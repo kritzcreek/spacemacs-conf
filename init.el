@@ -40,6 +40,7 @@ This function should only modify configuration layer settings."
      git
      markdown
      org
+     latex
      bibtex
      (shell :variables
             shell-default-height 30
