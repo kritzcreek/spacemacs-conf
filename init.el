@@ -342,6 +342,7 @@ This function is called immediately after `dotspacemacs/init', before layer
 configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
+  (defconst kc/is-laptop? (string= (system-name) "DESKTOP-3QVFPQC"))
   (setq ns-use-srgb-colorspace nil
         gnutls-min-prime-bits 4096
         custom-file "~/.spacemacs.d/custom.el"
