@@ -344,6 +344,8 @@ configuration.
 It is mostly for variables that should be set before packages are loaded.
 If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (defconst kc/is-laptop? (string= (system-name) "DESKTOP-3QVFPQC"))
+  (defvar kc/powerline-height (if kc/is-laptop? 36 27))
+
   (setq ns-use-srgb-colorspace nil
         gnutls-min-prime-bits 4096
         custom-file "~/.spacemacs.d/custom.el"
@@ -384,7 +386,7 @@ you should place your code here."
         spaceline-workspace-numbers-unicode t
         spaceline-separator-dir-left '(left . left)
         spaceline-separator-dir-right '(right . right)
-        powerline-height 27)
+        powerline-height kc/powerline-height)
 
   (spaceline-toggle-window-number-on)
   (spaceline-toggle-buffer-modified-on)
