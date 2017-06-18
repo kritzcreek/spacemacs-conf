@@ -60,7 +60,6 @@ This function should only modify configuration layer settings."
                                       apropospriate-theme
                                       challenger-deep-theme
                                       moe-theme
-                                      doom-themes
                                       ;; (psc-ide :location (recipe
                                       ;;                     :fetcher github
                                       ;;                     :branch "record-completions"
@@ -137,7 +136,8 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(challenger-deep
+   dotspacemacs-themes '(doom-nova
+                         challenger-deep
                          spacemacs-light
                          spacemacs-dark)
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
@@ -370,15 +370,13 @@ you should place your code here."
   (define-key evil-visual-state-map "j" 'evil-next-visual-line)
   (define-key evil-visual-state-map "k" 'evil-previous-visual-line)
 
-  (require 'doom-themes)
   ;; (require 'moe-theme)
   ;; Disable all previously selected themes
-  (mapcar #'disable-theme custom-enabled-themes)
+  ;; (mapcar #'disable-theme custom-enabled-themes)
   ;; (load-theme 'apropospriate-light t)
   ;; (load-theme 'apropospriate-dark t)
   ;; (load-theme 'moe-dark t)
   ;; (moe-theme-set-color 'blue)
-  (load-theme 'doom-nova t)
 
   ;; Spaceline config
   (require 'spaceline-config)
