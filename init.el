@@ -29,7 +29,8 @@ This function should only modify configuration layer settings."
    dotspacemacs-configuration-layer-path '()
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(
+   '(rust
+     restclient
      javascript
      yaml
      (auto-completion :variables
@@ -421,6 +422,16 @@ you should place your code here."
 
   (spacemacs/set-leader-keys-for-minor-mode 'psc-ide-mode
     "e" 'purescript-emmet)
+
+  ;; Expenses setup
+  (with-eval-after-load "ox-latex"
+    (add-to-list 'org-latex-classes
+                 '("koma-article" "\\documentclass{scrartcl}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
