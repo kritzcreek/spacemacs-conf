@@ -61,7 +61,6 @@ This function should only modify configuration layer settings."
                                       ov
                                       apropospriate-theme
                                       challenger-deep-theme
-                                      moe-theme
                                       ;; (psc-ide :location (recipe
                                       ;;                     :fetcher github
                                       ;;                     :branch "record-completions"
@@ -376,13 +375,10 @@ you should place your code here."
   (define-key evil-visual-state-map "j" 'evil-next-visual-line)
   (define-key evil-visual-state-map "k" 'evil-previous-visual-line)
 
-  ;; (require 'moe-theme)
   ;; Disable all previously selected themes
   ;; (mapcar #'disable-theme custom-enabled-themes)
   ;; (load-theme 'apropospriate-light t)
   ;; (load-theme 'apropospriate-dark t)
-  ;; (load-theme 'moe-dark t)
-  ;; (moe-theme-set-color 'blue)
 
   ;; Spaceline config
   (require 'spaceline-config)
