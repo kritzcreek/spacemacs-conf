@@ -58,6 +58,7 @@ This function should only modify configuration layer settings."
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
    dotspacemacs-additional-packages '(package-lint
+                                      fraktur-mode
                                       ov
                                       apropospriate-theme
                                       challenger-deep-theme
@@ -404,6 +405,9 @@ you should place your code here."
 
   ;; PSC-IDE
   (global-set-key (kbd "C-SPC") 'company-complete)
+
+  ;; FUN!
+  (global-set-key (kbd "<f9>") 'fraktur-mode)
 
   ;; Unicode in PS
   (require 'ps-unicode-input)
