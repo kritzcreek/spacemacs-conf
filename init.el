@@ -40,6 +40,7 @@ This function should only modify configuration layer settings."
                       auto-completion-return-key-behavior nil
                       auto-completion-tab-key-behavior 'complete)
      emacs-lisp
+     helm
      git
      markdown
      org
@@ -53,7 +54,7 @@ This function should only modify configuration layer settings."
      syntax-checking
      html
      purescript
-     (haskell :variables haskell-completion-backend 'intero))
+     haskell)
    ;; List of additional packages that will be installed without being
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
@@ -61,12 +62,13 @@ This function should only modify configuration layer settings."
    dotspacemacs-additional-packages '(package-lint
                                       fraktur-mode
                                       ov
+                                      kaolin-themes
                                       apropospriate-theme
                                       challenger-deep-theme
                                       ;; (psc-ide :location (recipe
                                       ;;                     :fetcher github
-                                      ;;                     :branch "record-completions"
-                                      ;;                     :repo "epost/psc-ide-emacs"))
+                                      ;;                     :branch "editor-mode"
+                                      ;;                     :repo "kRITZCREEK/psc-ide-emacs"))
                                       )
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
@@ -97,7 +99,11 @@ It should only modify the values of Spacemacs settings."
    ;; (default t)
    dotspacemacs-elpa-https t
    ;; Maximum allowed time in seconds to contact an ELPA repository.
+   ;; (default 5)
    dotspacemacs-elpa-timeout 5
+   ;; If non-nil then verify the signature for downloaded Spacelpa archives.
+   ;; (default nil)
+   dotspacemacs-verify-spacelpa-archives nil
    ;; If non-nil then spacemacs will check for updates at startup
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
@@ -105,8 +111,8 @@ It should only modify the values of Spacemacs settings."
    dotspacemacs-check-for-update nil
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
-   ;; to `emacs-version'.
-   dotspacemacs-elpa-subdirectory nil
+   ;; to `emacs-version'. (default 'emacs-version)
+   dotspacemacs-elpa-subdirectory 'emacs-version
    ;; One of `vim', `emacs' or `hybrid'.
    ;; `hybrid' is like `vim' except that `insert state' is replaced by the
    ;; `hybrid state' with `emacs' key bindings. The value can also be a list
@@ -195,7 +201,7 @@ It should only modify the values of Spacemacs settings."
    ;; start. (default nil)
    dotspacemacs-auto-resume-layouts nil
    ;; If non-nil, auto-generate layout name when creating new layouts. Only has
-   ;; effect when using the "jump to layout by number" commands.
+   ;; effect when using the "jump to layout by number" commands. (default nil)
    dotspacemacs-auto-generate-layout-names nil
    ;; Size (in MB) above which spacemacs will prompt to open the large file
    ;; literally to avoid performance issues. Opening a file literally means that
@@ -221,8 +227,9 @@ It should only modify the values of Spacemacs settings."
    ;; source settings. Else, disable fuzzy matching in all sources.
    ;; (default 'always)
    dotspacemacs-helm-use-fuzzy 'always
-   ;; If non-nil, the paste transient-state is enabled. And pressing `p' several
-   ;; times, cycles through the elements in the `kill-ring'. (default nil)
+   ;; If non-nil, the paste transient-state is enabled. While enabled, pressing
+   ;; `p' several times cycles through the elements in the `kill-ring'.
+   ;; (default nil)
    dotspacemacs-enable-paste-transient-state nil
    ;; Which-key delay in seconds. The which-key buffer is the popup listing
    ;; the commands bound to the current keystroke sequence. (default 0.4)
@@ -325,6 +332,7 @@ It should only modify the values of Spacemacs settings."
    ;; %n - Narrow if appropriate
    ;; %z - mnemonics of buffer, terminal, and keyboard coding systems
    ;; %Z - like %z, but including the end-of-line format
+   ;; (default "%I@%S")
    dotspacemacs-frame-title-format "%I@%S"
    ;; Format specification for setting the icon title format
    ;; (default nil - same as frame-title-format)
@@ -357,6 +365,11 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
         gnutls-min-prime-bits 4096
         custom-file "~/.spacemacs.d/custom.el"
         exec-path-from-shell-check-startup-files nil)
+  ;; Work around a security problem. Remove this after 25.3
+  (eval-after-load "enriched"
+    '(defun enriched-decode-display-prop (start end &optional param)
+       (list start end)))
+
   (load custom-file 'no-error)
   )
 
@@ -367,6 +380,10 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
+
+  ;; work around stupid bug https://github.com/syl20bnr/spacemacs/issues/9563
+  (require 'tramp)
+
   (add-to-list 'exec-path "~/.local/bin/")
   (add-to-load-path "~/.spacemacs.d/")
 
