@@ -42,15 +42,15 @@ This function should only modify configuration layer settings."
      emacs-lisp
      helm
      git
-     markdown
-     org
+     (markdown :variables markdown-live-preview-engine 'vmd)
+     (org :variables org-enable-github-support t)
+     github
      latex
      bibtex
      (shell :variables
             shell-default-height 30
             shell-default-position 'bottom)
      ;; spell-checking
-     (colors :variables colors-enable-nyan-cat-progress-bar t)
      syntax-checking
      html
      purescript
@@ -63,17 +63,13 @@ This function should only modify configuration layer settings."
                                       fraktur-mode
                                       ov
                                       kaolin-themes
-                                      apropospriate-theme
-                                      challenger-deep-theme
-                                      ;; (psc-ide :location (recipe
-                                      ;;                     :fetcher github
-                                      ;;                     :branch "editor-mode"
-                                      ;;                     :repo "kRITZCREEK/psc-ide-emacs"))
-                                      )
+                                      (psc-ide :location "c:/Users/creek/code/psc-ide-emacs/")
+                                      ;; (purescript-mode :location "c:/Users/creek/code/purescript-mode/")
+                                      (sd-mode :location "c:/Users/creek/code/sd-mode/"))
    ;; A list of packages that cannot be updated.
    dotspacemacs-frozen-packages '()
    ;; A list of packages that will not be installed and loaded.
-   dotspacemacs-excluded-packages '()
+   dotspacemacs-excluded-packages '(rainbow-delimiters)
    ;; Defines the behaviour of Spacemacs when installing packages.
    ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
    ;; `used-only' installs only explicitly used packages and deletes any unused
@@ -149,10 +145,18 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(doom-nova
+   dotspacemacs-themes '(doom-peacock
+                         default
+                         doom-nova
                          challenger-deep
                          spacemacs-light
                          spacemacs-dark)
+   ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
+   ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
+   ;; are spaceline themes. `vanilla' is default Emacs mode-line. `custom' is a
+   ;; user defined themes, refer to the DOCUMENTATION.org for more info on how
+   ;; to create your own spaceline theme.. (default 'spacemacs)
+   dotspacemacs-mode-line-theme 'spacemacs
    ;; If non-nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state nil
    ;; Default font, or prioritized list of fonts. `powerline-scale' allows to
@@ -373,7 +377,9 @@ If you are unsure, try setting them in `dotspacemacs/user-config' first."
   (eval-after-load "enriched"
     '(defun enriched-decode-display-prop (start end &optional param)
        (list start end)))
-
+  ;; Workaround for https://github.com/syl20bnr/spacemacs/issues/10205
+  (with-eval-after-load 'helm
+    (setq helm-display-function 'helm-default-display-buffer))
   (load custom-file 'no-error)
   )
 
@@ -403,35 +409,23 @@ you should place your code here."
   ;; (load-theme 'apropospriate-light t)
   ;; (load-theme 'apropospriate-dark t)
 
-  ;; Spaceline config
-  (require 'spaceline-config)
-  (setq powerline-default-separator 'slant
-        spaceline-workspace-numbers-unicode t
-        spaceline-separator-dir-left '(left . left)
-        spaceline-separator-dir-right '(right . right)
-        powerline-height kc/powerline-height)
-
-  (spaceline-toggle-window-number-on)
-  (spaceline-toggle-buffer-modified-on)
-  (spaceline-toggle-major-mode-on)
-  (spaceline-toggle-hud-on)
-  (spaceline-toggle-projectile-root-on)
-  (spaceline-spacemacs-theme)
-
   ;; Make UTF-8 the default encoding
   (set-language-environment "UTF-8")
-  (setq-default buffer-file-coding-system 'utf-8-unix)
-  (setq-default default-buffer-file-coding-system 'utf-8-unix)
-  (set-default-coding-systems 'utf-8-unix)
-  (prefer-coding-system 'utf-8-unix)
+  ;; (setq-default buffer-file-coding-system 'utf-8-unix)
+  ;; (setq-default default-buffer-file-coding-system 'utf-8-unix)
+  ;; (set-default-coding-systems 'utf-8-unix)
+  ;; (prefer-coding-system 'utf-8-unix)
 
   ;; PSC-IDE
+  (require 'psc-ide)
+  (setq psc-ide-editor-mode t)
   (global-set-key (kbd "C-SPC") 'company-complete)
 
   ;; FUN!
   (global-set-key (kbd "<f9>") 'fraktur-mode)
 
   ;; Unicode in PS
+  (require 'sd-mode)
   (require 'ps-unicode-input)
   (defun turn-on-ps-unicode-input-method ()
     "Set input method `slamdata`."
@@ -439,6 +433,15 @@ you should place your code here."
     (set-input-method "ps-unicode"))
 
   (add-hook 'purescript-mode-hook 'turn-on-ps-unicode-input-method)
+
+  ;; Better smartparens for purescript-mode
+  (when (featurep 'smartparens)
+    (sp-with-modes '(purescript-mode)
+      (sp-local-pair "{-" "-}")
+      (sp-local-pair "'" nil :unless '(sp-point-after-word-p))
+      (sp-local-pair "\\(" nil :actions nil)
+      (sp-local-pair "\\{" nil :actions nil)
+      (sp-local-pair "\\[" nil :actions nil)))
 
   (defun purescript-emmet ()
     "Expands the emmet abbreviation under cursor using `purescript-emmet`."
@@ -449,16 +452,6 @@ you should place your code here."
 
   (spacemacs/set-leader-keys-for-minor-mode 'psc-ide-mode
     "e" 'purescript-emmet)
-
-  ;; Expenses setup
-  (with-eval-after-load "ox-latex"
-    (add-to-list 'org-latex-classes
-                 '("koma-article" "\\documentclass{scrartcl}"
-                   ("\\section{%s}" . "\\section*{%s}")
-                   ("\\subsection{%s}" . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
